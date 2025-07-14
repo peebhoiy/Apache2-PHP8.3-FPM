@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Exit if any command fails
+set -e
+
+echo "🚀 Updating system..."
+sudo apt update && sudo apt upgrade -y
+
+echo "📦 Adding PHP 8.3 PPA..."
+sudo apt install -y software-properties-common
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+
+echo "🌐 Installing Apache2 and PHP 8.3 FPM..."
+sudo apt install -y apache2 php8.3 php8.3-fpm libapache2-mod-fcgid
+
+echo "🧩 Installing PHP 8.3 modules required for LMS..."
+sudo apt install -y php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl \
+php8.3-mbstring php8.3-mysql php8.3-xml php8.3-soap php8.3-xmlrpc php8.3-zip \
+php8.3-bcmath php8.3-readline php8.3-redis php8.3-opcache unzip git
+
+echo "🛠 Enabling Apache FPM and Rewrite modules..."
+sudo a2enmod proxy_fcgi setenvif
+sudo a2enconf php8.3-fpm
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+sudo systemctl enable apache2
+
+echo "✅ Apache2 with PHP 8.3-FPM and all Moodle modules installed successfully!"
+php -v
